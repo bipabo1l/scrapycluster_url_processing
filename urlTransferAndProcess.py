@@ -1,4 +1,5 @@
 # coding=utf-8
+# Author:bipabo1l
 
 import hashlib
 import redis
@@ -11,27 +12,29 @@ import time
 import logging
 from pymongo import MongoClient
 
+#本文中假定您的redis服务器127.0.0.5,mongodb服务器127.0.0.1,Scrapy Cluster集群的三台机器：127.0.0.2，127.0.0.3，127.0.0.4
+
 logging.getLogger("pykafka").addHandler(logging.StreamHandler())
 logging.getLogger("pykafka").setLevel(logging.DEBUG)
 
 URL_KEY = "urls"
 URL_HASH_KEY = "url_hash_key"
 SIM_RULE_KEY = "sim_rule_key"
-client = redis.Redis(host='127.0.0.1',port=6379,db=8)
+client = redis.Redis(host='127.0.0.5',port=6379,db=8)
 
 del_key_list = ["_"]
 
 sys_config = {
     "database": {
         "db_name": "url_pool",
-        "db_host": "mongodb://172.20.214.71:443/"
+        "db_host": "mongodb://127.0.0.1:443/"
     }
 }
 
 client = MongoClient(sys_config['database']['db_host'])
 db_connect = client[sys_config['database']['db_name']]
 
-client = KafkaClient(zookeeper_hosts ="172.20.214.66:2181,172.20.214.69:2181,172.20.214.71:2181")
+client = KafkaClient(zookeeper_hosts ="127.0.0.2:2181,127.0.0.3:2181,127.0.0.3:2181")
 topic = client.topics['demo.crawled_firehose']
 
 def md5(strs):
